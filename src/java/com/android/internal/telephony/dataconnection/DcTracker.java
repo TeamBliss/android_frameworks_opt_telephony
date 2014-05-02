@@ -1199,10 +1199,7 @@ public final class DcTracker extends DcTrackerBase {
         boolean isDisconnected = (overallState == DctConstants.State.IDLE ||
                 overallState == DctConstants.State.FAILED);
 
-        if (mPhone instanceof GSMPhone) {
-            // The "current" may no longer be valid.  MMS depends on this to send properly. TBD
-            ((GSMPhone)mPhone).updateCurrentCarrierInProvider();
-        }
+        updateCurrentCarrierInProvider();
 
         // TODO: It'd be nice to only do this if the changed entrie(s)
         // match the current operator.
@@ -1418,6 +1415,7 @@ public final class DcTracker extends DcTrackerBase {
 
     private void onRecordsLoaded() {
         if (DBG) log("onRecordsLoaded: createAllApnList");
+        updateCurrentCarrierInProvider();
         createAllApnList();
         setInitialAttachApn();
         if (mPhone.mCi.getRadioState().isOn()) {
@@ -2483,6 +2481,14 @@ public final class DcTracker extends DcTrackerBase {
                 newIccRecords.registerForRecordsLoaded(
                         this, DctConstants.EVENT_RECORDS_LOADED, null);
             }
+        }
+    }
+
+    protected void updateCurrentCarrierInProvider() {
+        if (mPhone instanceof GSMPhone) {
+            ((GSMPhone)mPhone).updateCurrentCarrierInProvider();
+        } else if (mPhone instanceof CDMAPhone) {
+            ((CDMAPhone)mPhone).updateCurrentCarrierInProvider(getOperatorNumeric());
         }
     }
 
