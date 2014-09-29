@@ -37,6 +37,7 @@ import com.android.internal.telephony.SmsStorageMonitor;
 import com.android.internal.telephony.TelephonyProperties;
 import com.android.internal.telephony.WspTypeDecoder;
 import com.android.internal.telephony.cdma.sms.SmsEnvelope;
+import com.android.internal.telephony.VirginMobileDecoder;
 import com.android.internal.util.BitwiseInputStream;
 
 import java.util.Arrays;
@@ -193,6 +194,12 @@ public class CdmaInboundSmsHandler extends InboundSmsHandler {
                 } catch (Exception ourException) {
                     loge("Got an exception trying to get VMUS MMS data " + ourException);
                 }
+        }
+
+        // Check to see if we have a Virgin Mobile MMS
+        // If so, decode it, and update mUserData/mMessageRef
+        if (sms.getOriginatingAddress().equals("9999999999")) {
+            VirginMobileDecoder.decodeMMS(sms);
         }
 
         if (!mStorageMonitor.isStorageAvailable() &&
