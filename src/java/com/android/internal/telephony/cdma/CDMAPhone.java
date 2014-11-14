@@ -1122,6 +1122,7 @@ public class CDMAPhone extends PhoneBase {
 
             case EVENT_RUIM_RECORDS_LOADED:{
                 Rlog.d(LOG_TAG, "Event EVENT_RUIM_RECORDS_LOADED Received");
+                updateCurrentCarrierInProvider();
             }
             break;
 
@@ -1565,19 +1566,19 @@ public class CDMAPhone extends PhoneBase {
     }
 
     /**
-     * Sets the "current" field in the telephony provider to the
-     * operator numeric passed.
+     * Sets the "current" field in the telephony provider according to the
+     * build-time operator numeric property
      *
      * @return true for success; false otherwise.
      */
-    public boolean updateCurrentCarrierInProvider(String operatorNumeric) {
+    boolean updateCurrentCarrierInProvider(String operatorNumeric) {
         log("CDMAPhone: updateCurrentCarrierInProvider called");
         if (!TextUtils.isEmpty(operatorNumeric)) {
             try {
                 Uri uri = Uri.withAppendedPath(Telephony.Carriers.CONTENT_URI, "current");
                 ContentValues map = new ContentValues();
                 map.put(Telephony.Carriers.NUMERIC, operatorNumeric);
-                log("updateCurrentCarrierInProvider with: numeric=" + operatorNumeric);
+                log("updateCurrentCarrierInProvider from system: numeric=" + operatorNumeric);
                 getContext().getContentResolver().insert(uri, map);
 
                 // Updates MCC MNC device configuration information
